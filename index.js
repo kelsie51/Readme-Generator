@@ -1,53 +1,94 @@
-// TODO: Include packages needed for this application
-const inquirer = require('inquirer')
+const fs = require("fs"); //standard node pkg file
+const inquirer = require("inquirer");//dependency pkg used for input genertion in README
+const generateReadme = require("./util/generateReadme")//Generated ReadMe file
+const writeFileAsync = util.promisify(fs.writeFile); //Promise response fx
+const apiCall = require("./api")
+const util = require("util");// pkg file
 
+function promptUser(){/////Prompts User questions as inputs in the README.md
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "projectTitle",
+            message: "What is the Project Title?",
+        },
+        {
+            type: "input",
+            name: "description",
+            message: "Include a short description of your project: "
+        },
+        {
+            type: "input",
+            name: "installation",
+            message: " Installation Instructions ",
+        },
+        {
+            type: "input",
+            name: "usage",
+            message: " Project Usage?"
+        },
+        {
+            type: "list",
+            name: "license",
+            message: "Chose from these licenses for your project: ",
+            choices: [
+                "Apache",
+                "Academic",
+                "GNU",
+                "ISC",
+                "MIT",
+                "Mozilla",
+                "Open"
+                ""
+            ]
+        },
+        {
+            type: "input",
+            name: "contributing",
+            message: "Who Contributed to this project?"
+        },
+        {
+            type: "input",
+            name: "tests",
+            message: "Are tests included?"
+        },
+        {
+            type: "input",
+            name: "username",
+            message: "Enter your GitHub Username: "
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Enter your email: "
+        }
+    ]);
+} 
 
-//const windex = require('./windex.js');  //readfile syntax used for append,read, write //modified fs to windex w/ ./ for indication of same diectory/not node specific
-//let globalData = "";
-//const readCallback = (err,data)=>{
-   //console.log(windex.questions);/// replaced ('data') with js.file and question variable
-   //console.log(windex.returnNumber1());  ///js file. and second fx ()///changed githubUrl to returnNumberone as example of changes you can make
+Function async Iniating 
+  async function init() {
+    try {
+      const answers = await promptUser();
+      const results = await apiCall(answers.username);
+      answers.email = results.email;
+      answers.avatar_url = results.avatar_url;
+      const generateContent = generateReadme(answers);
 
-   
+      console.log(results);
+      await writeFileAsync('./dist/README.md', generateContent);
 
-//fs.readFile('data.csv','utf8', readCallback);// returning data.csv as string
-    
+      console.log('Successfully wrote to README.md');
+    } catch(err) {
+      console.log(err);
 
-//fs.writeFile('windex.js', process.argv[2], (err) =>//creates newFile from scratch,and adds text within
-    //err ? console.error(err) : console.log('success!')
-//);
-
-//fs.appendFile('log.txt', `${process.argv[2]}\n`, (err) =>//creates file, adds to process.argv a carriage return line break,error check  
-//err ? console.error(err) : console.log('Commit Logged')
-//);
-
-
-// TODO: Create an array of questions for user input
-//const questions = [];
-////console.log(process.argv);
-
-/////const name1 = process.argv[2];
-/////const name2 = process.argv[3];
-////const extra = parseInt (process.argv[4]);////turning number into number,not string with parse
-//console.log(" user name is " + name1);
-////console.log(" another user name is " + name2); 
-////console.log(typeof extra);////turning number into number,not string with parse
-
-/////if (a===b) {///// if using conditional statement
-/////console.log(true);
-/////} else {
-//////console.log(false);
-//////}   
-
-/////console.log(a===b ? true : false) //////ternary operator
-/////console.log(a===b); /////for comparing variables
-/////console.log(process.agrv[2]===process.argv[3]);/////compares arguments directly
-
-// TODO: Create a function to write README file
-//function writeToFile(fileName, data) {}
- 
-// TODO: Create a function to initialize app
-//function init() {}
-
-// Function call to initialize app
-//init();
+//async function init() {//// Async function promise 
+    //try {
+        //const answers = await promptUser();// Ask user questions and generate responses
+       // const generateContent = generateReadme(answers);
+   // await writeFileAsync('./dist/README.md', generateContent);// Write new README.md to dist directory
+       // console.log('✔️  Successfully wrote to README.md');
+    //}catch(err) {
+       // console.log(err);
+    //}
+  //}
+  init();  
